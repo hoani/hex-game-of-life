@@ -9,6 +9,8 @@ const int R2 = 18;
 const int R3 = 19;
 const int R4 = 20;
 
+const int debounceMs = 150;
+
 Keypad::Keypad()
 {
     pinMode(C1, INPUT_PULLUP);
@@ -23,34 +25,48 @@ Keypad::Keypad()
     digitalWrite(R3, HIGH);
     digitalWrite(R4, HIGH);
 
+    lastPressMs = millis();
+
     Serial.begin(115200);
 }
 
 int Keypad::sample()
 {
+    // debounce
+    if (millis() - lastPressMs < debounceMs)
+    {
+        return lastPress;
+    }
+    lastPressMs = millis();
+
     int row = -1;
 
     row = sampleRow(R1);
     if (row != -1)
     {
-        return row;
+        lastPress = row;
+        return lastPress;
     }
     row = sampleRow(R2);
     if (row != -1)
     {
-        return row + 3;
+        lastPress = row + 3;
+        return lastPress;
     }
     row = sampleRow(R3);
     if (row != -1)
     {
-        return row + 6;
+        lastPress = row + 6;
+        return lastPress;
     }
     row = sampleRow(R4);
     if (row != -1)
     {
-        return row + 9;
+        lastPress = row + 9;
+        return lastPress;
     }
-    return -1;
+    lastPress = -1;
+    return lastPress;
 }
 
 int Keypad::sampleRow(int rowPin)
