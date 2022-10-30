@@ -8,6 +8,15 @@
 #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
 
-#define GRID_PIN 6
+class LedGrid
+{
+public:
+    LedGrid(int pin);
+
+    void update(const Grid *grid);
+
+private:
+    Adafruit_NeoPixel pixels;
+};
 
 #endif
