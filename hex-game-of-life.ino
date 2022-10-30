@@ -82,30 +82,38 @@ void loop()
 void gameOfLifeUpdate()
 {
   int key = keypad.sample();
-  if (key != -1 && key < 9)
+  if (key != -1)
   {
-    update.idle();
-    grid.selectForEdit(key);
-    serialGrid.update(&grid);
-    ledGrid.update(&grid);
-    while (keypad.sample() != -1)
+    if (key < 9)
     {
-    }
-    int start = millis();
-    const int timeout = 10000; // 10 seconds.
-    while ((millis() - start) < timeout)
-    {
-      key = keypad.sample();
-      if (key != -1)
+      update.idle();
+      grid.selectForEdit(key);
+      serialGrid.update(&grid);
+      ledGrid.update(&grid);
+      while (keypad.sample() != -1)
       {
-        if (key < 9)
-        {
-          grid.applyEdit(key);
-        }
-        break;
       }
+      int start = millis();
+      const int timeout = 10000; // 10 seconds.
+      while ((millis() - start) < timeout)
+      {
+        key = keypad.sample();
+        if (key != -1)
+        {
+          if (key < 9)
+          {
+            grid.applyEdit(key);
+          }
+          break;
+        }
+      }
+      grid.clearEdit();
     }
-    grid.clearEdit();
+    else if (key == 9) // '#' key
+    {
+      grid = Grid(millis()); // reset with new seed
+    }
+    // Prepare the game to return.
     update.idle();
     while (keypad.sample() != -1)
     {

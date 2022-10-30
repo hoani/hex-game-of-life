@@ -17,7 +17,7 @@ public:
 private:
     int sampleRow(int rowPin);
     int lastPressMs = 0;
-    int lastPress;
+    int lastPress = -1;
 };
 
 #endif
