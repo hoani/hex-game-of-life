@@ -23,7 +23,11 @@ void SerialGrid::update(const Grid *grid)
         }
         for (int j = 0; j < rowLen; j++)
         {
-            if (grid->kill[i][j])
+            if (grid->edit[i][j])
+            {
+                Serial.print("E");
+            }
+            else if (grid->kill[i][j])
             {
                 Serial.print("-");
             }

@@ -13,6 +13,70 @@ Grid::Grid(int seed)
             cells[i][j] = (random(2) == 1 && cellExists(i, j));
             kill[i][j] = false;
             spawn[i][j] = false;
+            edit[i][j] = false;
+        }
+    }
+}
+
+void Grid::selectForEdit(int k)
+{
+    for (int i = 0; i < ROWS; i++)
+    {
+        int j;
+        if (i >= SIZE)
+        {
+            j = COLS - (k + 1);
+        }
+        else
+        {
+            j = COLS - (k + SIZE - i);
+        }
+        if (j < 0 || j >= rowLength(i))
+        {
+            continue;
+        }
+        edit[i][j] = true;
+    }
+    editIndex = k;
+}
+
+void Grid::applyEdit(int k)
+{
+    int iCurrent = rowLength(editIndex);
+    for (int i = 0; i < ROWS; i++)
+    {
+        int j;
+        if (i >= SIZE)
+        {
+            j = COLS - (editIndex + 1);
+        }
+        else
+        {
+            j = COLS - (editIndex + SIZE - i);
+        }
+        if (j < 0 || j >= rowLength(i))
+        {
+            continue;
+        }
+        iCurrent--; // A bit convoluted, but we have to count backwards.
+        if (iCurrent == k)
+        {
+            cells[i][j] = !cells[i][j];
+            kill[i][j] = false;
+            spawn[i][j] = false;
+            break;
+        }
+    }
+    clearEdit();
+}
+
+void Grid::clearEdit()
+{
+    for (int i = 0; i < ROWS; i++)
+    {
+        for (int j = 0; j < COLS; j++)
+        {
+            edit[i][j] = false;
         }
     }
 }

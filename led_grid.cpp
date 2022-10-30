@@ -21,7 +21,18 @@ void LedGrid::update(const Grid *grid)
         for (int j = 0; j < rowLen; j++)
         {
             int n = noff + j * 2;
-            if (grid->kill[i][j])
+            if (grid->edit[i][j])
+            {
+                if (grid->cells[i][j])
+                {
+                    pixels.setPixelColor(n, 50, 20, 50);
+                }
+                else
+                {
+                    pixels.setPixelColor(n, 20, 50, 50);
+                }
+            }
+            else if (grid->kill[i][j])
             {
                 pixels.setPixelColor(n, 100, 0, 0);
             }
