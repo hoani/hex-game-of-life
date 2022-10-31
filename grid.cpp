@@ -10,7 +10,11 @@ Grid::Grid(int seed)
     {
         for (int j = 0; j < COLS; j++)
         {
-            cells[i][j] = (random(2) == 1 && cellExists(i, j));
+            if (j < rowLength(i)) {
+                cells[i][j] = (random(2) == 1 && cellExists(i, j));
+            } else {
+                cells[i][j] = false;
+            }
             kill[i][j] = false;
             spawn[i][j] = false;
             edit[i][j] = false;
@@ -167,7 +171,7 @@ int Grid::countNeighbours(int i, int j)
             count++;
         }
     }
-    if (j < COLS - 1)
+    if (j < rowLen - 1)
     {
         if (cells[i][j + 1])
         {
