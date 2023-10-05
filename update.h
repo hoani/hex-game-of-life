@@ -10,9 +10,14 @@ public:
     GridUpdate() {}
     GridUpdate(Grid *grid, GridView *view) : _lastUpdateMs(millis()), _grid(grid), _view(view) {}
 
+    void setSpeed(int multiplier)
+    {
+        _multiplier = multiplier;
+    }
+
     void update()
     {
-        int delta = (int)millis() - _lastUpdateMs;
+        int delta = ((int)millis() * _multiplier - _lastUpdateMs);
         if (state == GridState::Idle && delta > idleMs)
         {
             _lastUpdateMs += idleMs;
@@ -29,12 +34,16 @@ public:
             viewUpdate();
             state = GridState::Idle;
         }
+        else
+        {
+            delay(10);
+        }
     }
 
     void idle()
     {
         state = GridState::Idle;
-        _lastUpdateMs = millis();
+        _lastUpdateMs = millis() * _multiplier;
         viewUpdate();
     }
 
@@ -54,6 +63,7 @@ private:
     int _lastUpdateMs;
     GridView *_view;
     Grid *_grid;
+    int _multiplier = 1;
 
     const int idleMs = 1500;
     const int pendingMs = 500;

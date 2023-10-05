@@ -1,28 +1,29 @@
 #include "grid.h"
-#include "serial_grid.h"
-#include "led_grid.h"
+#include "serial_view.h"
+#include "led_view.h"
 #include "update.h"
 
 #define LED_GRID_PIN 6
-
-Grid grid;
-LedGrid ledGrid = LedGrid(LED_GRID_PIN);
-SerialGrid serialGrid(Serial1);
 
 void setup()
 {
   int seed = analogRead(A3);
   seed = millis();
-  grid = Grid(seed);
-  Serial1.begin(115200);
+  // Grid grid(seed);
+  Grid grid;
 
-  CompoundGridView view(ledGrid, serialGrid);
+  Serial1.begin(115200);
+  SerialView serialView(Serial1);
+
+  LedView ledView(LED_GRID_PIN);
+
+  CompoundGridView view(ledView, serialView);
 
   GridUpdate update(&grid, &view);
+  update.setSpeed(10);
   update.idle();
   while (true)
   {
-    delay(1000);
     update.update();
   }
 }

@@ -1,6 +1,6 @@
-#include "serial_grid.h"
+#include "serial_view.h"
 
-void SerialGrid::update(const Grid *grid)
+void SerialView::update(const Grid *grid)
 {
     _serial.println("-----------------");
     for (int i = 0; i < ROWS; i++)
@@ -17,11 +17,7 @@ void SerialGrid::update(const Grid *grid)
         }
         for (int j = 0; j < rowLen; j++)
         {
-            if (grid->edit[i][j])
-            {
-                _serial.print("E");
-            }
-            else if (grid->kill[i][j])
+            if (grid->kill[i][j])
             {
                 _serial.print("-");
             }

@@ -1,7 +1,26 @@
 #include "grid.h"
 #include "arduino.h"
 
-Grid::Grid() : Grid(millis()) {}
+// Without a seed, we create a grid with a symmetric pattern. This is for testing end of life only.
+Grid::Grid()
+{
+    for (int i = 0; i < ROWS; i++)
+    {
+        for (int j = 0; j < COLS; j++)
+        {
+            if (j < rowLength(i))
+            {
+                cells[i][j] = (((i - 4) % 2) == 0) || (((j - 4) % 2) == 0);
+            }
+            else
+            {
+                cells[i][j] = false;
+            }
+            kill[i][j] = false;
+            spawn[i][j] = false;
+        }
+    }
+}
 
 Grid::Grid(int seed)
 {
@@ -10,77 +29,16 @@ Grid::Grid(int seed)
     {
         for (int j = 0; j < COLS; j++)
         {
-            if (j < rowLength(i)) {
+            if (j < rowLength(i))
+            {
                 cells[i][j] = (random(2) == 1 && cellExists(i, j));
-            } else {
+            }
+            else
+            {
                 cells[i][j] = false;
             }
             kill[i][j] = false;
             spawn[i][j] = false;
-            edit[i][j] = false;
-        }
-    }
-}
-
-void Grid::selectForEdit(int k)
-{
-    for (int i = 0; i < ROWS; i++)
-    {
-        int j;
-        if (i >= SIZE)
-        {
-            j = COLS - (k + 1);
-        }
-        else
-        {
-            j = COLS - (k + SIZE - i);
-        }
-        if (j < 0 || j >= rowLength(i))
-        {
-            continue;
-        }
-        edit[i][j] = true;
-    }
-    editIndex = k;
-}
-
-void Grid::applyEdit(int k)
-{
-    int iCurrent = rowLength(editIndex);
-    for (int i = 0; i < ROWS; i++)
-    {
-        int j;
-        if (i >= SIZE)
-        {
-            j = COLS - (editIndex + 1);
-        }
-        else
-        {
-            j = COLS - (editIndex + SIZE - i);
-        }
-        if (j < 0 || j >= rowLength(i))
-        {
-            continue;
-        }
-        iCurrent--; // A bit convoluted, but we have to count backwards.
-        if (iCurrent == k)
-        {
-            cells[i][j] = !cells[i][j];
-            kill[i][j] = false;
-            spawn[i][j] = false;
-            break;
-        }
-    }
-    clearEdit();
-}
-
-void Grid::clearEdit()
-{
-    for (int i = 0; i < ROWS; i++)
-    {
-        for (int j = 0; j < COLS; j++)
-        {
-            edit[i][j] = false;
         }
     }
 }

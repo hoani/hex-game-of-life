@@ -14,7 +14,6 @@ public:
     bool cells[ROWS][COLS];
     bool kill[ROWS][COLS];
     bool spawn[ROWS][COLS];
-    bool edit[ROWS][COLS];
 
     static int rowLength(int i);
     static bool cellExists(int i, int j);
@@ -22,18 +21,12 @@ public:
     void calculateEra();
     void applyEra();
 
-    void selectForEdit(int k);
-    void applyEdit(int k);
-    void clearEdit();
-
 private:
     void calculateCell(int i, int j);
     void applyCell(int i, int j);
     int countNeighbours(int i, int j);
     int neighboursFromSmallerRow(int i, int j, int len);
     int neighboursFromLargerRow(int i, int j);
-
-    int editIndex;
 };
 
 class GridView
