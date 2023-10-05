@@ -4,12 +4,13 @@
 #include "grid.h"
 #include "arduino.h"
 
-class SerialGrid
+class SerialGrid : public GridView
 {
 public:
-    SerialGrid(Stream &ser) :_serial(ser){}
+    SerialGrid(Stream &ser) : _serial(ser) {}
 
     void update(const Grid *grid);
+
 private:
     Stream &_serial;
 };

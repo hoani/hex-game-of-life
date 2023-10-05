@@ -36,4 +36,26 @@ private:
     int editIndex;
 };
 
+class GridView
+{
+public:
+    virtual void update(const Grid *grid);
+};
+
+class CompoundGridView : public GridView
+{
+public:
+    CompoundGridView(GridView &a, GridView &b) : _a(a), _b(b) {}
+
+    void update(const Grid *grid)
+    {
+        _a.update(grid);
+        _b.update(grid);
+    }
+
+private:
+    GridView &_a;
+    GridView &_b;
+};
+
 #endif

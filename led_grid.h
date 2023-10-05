@@ -8,7 +8,7 @@
 #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
 
-class LedGrid
+class LedGrid : public GridView
 {
 public:
     LedGrid(int pin);
