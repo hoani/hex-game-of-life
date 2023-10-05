@@ -1,55 +1,49 @@
 #include "serial_grid.h"
-#include "arduino.h"
-
-SerialGrid::SerialGrid()
-{
-    Serial.begin(115200);
-}
 
 void SerialGrid::update(const Grid *grid)
 {
-    Serial.println("-----------------");
+    _serial.println("-----------------");
     for (int i = 0; i < ROWS; i++)
     {
         int rowLen = Grid::rowLength(i);
 
-        Serial.print("i=");
-        Serial.print(i);
-        Serial.print("\t.");
+        _serial.print("i=");
+        _serial.print(i);
+        _serial.print("\t.");
         int empties = (COLS - rowLen);
         for (int k = 0; k < empties; k++)
         {
-            Serial.print(".");
+            _serial.print(".");
         }
         for (int j = 0; j < rowLen; j++)
         {
             if (grid->edit[i][j])
             {
-                Serial.print("E");
+                _serial.print("E");
             }
             else if (grid->kill[i][j])
             {
-                Serial.print("-");
+                _serial.print("-");
             }
             else if (grid->spawn[i][j])
             {
-                Serial.print("+");
+                _serial.print("+");
             }
             else if (grid->cells[i][j])
             {
-                Serial.print("O");
+                _serial.print("O");
             }
             else
             {
-                Serial.print(" ");
+                _serial.print(" ");
             }
-            Serial.print(".");
+            _serial.print(".");
         }
         for (int k = 0; k < empties; k++)
         {
-            Serial.print(".");
+            _serial.print(".");
         }
-        Serial.println("");
+        _serial.println("");
     }
-    Serial.println("-----------------");
+    _serial.println("-----------------");
 }

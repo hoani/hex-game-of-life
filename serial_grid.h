@@ -2,13 +2,16 @@
 #define _HGOL_SERIAL_GRID_H_
 
 #include "grid.h"
+#include "arduino.h"
 
 class SerialGrid
 {
 public:
-    SerialGrid();
+    SerialGrid(Stream &ser) :_serial(ser){}
 
     void update(const Grid *grid);
+private:
+    Stream &_serial;
 };
 
 #endif
