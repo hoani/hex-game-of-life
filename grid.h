@@ -25,8 +25,15 @@ public:
 
     int eolCount() const;
 
+    void reset();
+
+    const static int EOL_DELAY = 32;
+    const static uint64_t EOL_GRID_FULL = 0x1fffffffffffffff;
+    const static uint64_t EOL_GRID_EMPTY = 0x0;
+
 private:
     void _calculateCell(int i, int j);
+    void _calculateEolCell(int i, int j);
     void _applyCell(int i, int j);
     int _countNeighbours(int i, int j);
     int _neighboursFromSmallerRow(int i, int j, int len);
