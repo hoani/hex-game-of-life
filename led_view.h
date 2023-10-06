@@ -17,6 +17,12 @@ public:
 
 private:
     Adafruit_NeoPixel pixels;
+    const static int NUM_HUES = 8;
+    const static uint16_t cellHue = 0x8800;  // Bluish.
+    const static uint16_t killHue = 0x0000;  // Red.
+    const static uint16_t spawnHue = 0x5555; // Green.
+    uint8_t sat = 0xff;
+    uint8_t val = 0xb0;
 };
 
 #endif

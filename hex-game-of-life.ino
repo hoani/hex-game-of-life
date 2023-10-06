@@ -20,7 +20,7 @@ void setup()
   CompoundGridView view(ledView, serialView);
 
   Update update(&grid, &view);
-  update.setSpeed(4);
+  update.setSpeed(10);
   update.idle();
   while (true)
   {
