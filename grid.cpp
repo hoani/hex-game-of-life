@@ -25,7 +25,6 @@ Grid::Grid()
 Grid::Grid(int seed)
 {
     randomSeed(seed);
-    reset();
 }
 
 void Grid::calculateEra()

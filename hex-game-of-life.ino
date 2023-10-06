@@ -10,10 +10,10 @@ void setup()
   int seed = analogRead(A3);
   seed = millis();
   Grid grid(seed);
-  // Grid grid; // Use for debugging EOL.
+  // Grid grid; // For debugging only.
 
-  Serial1.begin(115200);
-  SerialView serialView(Serial1);
+  Serial.begin(115200);
+  SerialView serialView(Serial);
 
   LedView ledView(LED_GRID_PIN);
 
