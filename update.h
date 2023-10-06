@@ -23,14 +23,14 @@ public:
 
 private:
     int _lastUpdateMs;
-    GridView *_view;
     Grid *_grid;
+    GridView *_view;
     int _multiplier = 1;
 
-    const int idleMs = 1500;
-    const int pendingMs = 500;
+    const int idleMs = 1000;
+    const int pendingMs = 1000;
 
-    void _updateView();
+    void _updateView(float progress);
 };
 
 #endif /* _HGOL_UPDATE_H_ */

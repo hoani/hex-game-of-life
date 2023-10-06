@@ -9,8 +9,8 @@ void setup()
 {
   int seed = analogRead(A3);
   seed = millis();
-  // Grid grid(seed);
-  Grid grid;
+  Grid grid(seed);
+  // Grid grid; // Use for debugging EOL.
 
   Serial1.begin(115200);
   SerialView serialView(Serial1);
@@ -20,7 +20,7 @@ void setup()
   CompoundGridView view(ledView, serialView);
 
   Update update(&grid, &view);
-  update.setSpeed(10);
+  update.setSpeed(1);
   update.idle();
   while (true)
   {

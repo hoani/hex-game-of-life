@@ -27,7 +27,7 @@ public:
 
     void reset();
 
-    const static int EOL_DELAY = 32;
+    const static int EOL_DELAY = 128;
     const static uint64_t EOL_GRID_FULL = 0x1fffffffffffffff;
     const static uint64_t EOL_GRID_EMPTY = 0x0;
 
@@ -51,7 +51,7 @@ private:
 class GridView
 {
 public:
-    virtual void update(const Grid *grid);
+    virtual void update(const Grid *grid, float progress);
 };
 
 class CompoundGridView : public GridView
@@ -59,10 +59,10 @@ class CompoundGridView : public GridView
 public:
     CompoundGridView(GridView &a, GridView &b) : _a(a), _b(b) {}
 
-    void update(const Grid *grid)
+    void update(const Grid *grid, float progress)
     {
-        _a.update(grid);
-        _b.update(grid);
+        _a.update(grid, progress);
+        _b.update(grid, progress);
     }
 
 private:

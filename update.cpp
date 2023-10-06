@@ -8,36 +8,49 @@ void Update::setSpeed(int multiplier)
 void Update::update()
 {
     int delta = ((int)millis() * _multiplier - _lastUpdateMs);
-    if (state == GridState::Idle && delta > idleMs)
+    float progress = 1.0;
+    switch (state)
     {
-        _lastUpdateMs += idleMs;
-        _grid->calculateEra();
+    case GridState::Idle:
+        progress = float(delta) / float(idleMs);
+        if (progress > 1.0)
+        {
+            progress = 1.0;
+            _lastUpdateMs += idleMs;
+            _updateView(progress);
+            _grid->calculateEra();
 
-        _updateView();
-        state = GridState::Pending;
-    }
-    else if (state == GridState::Pending && delta > pendingMs)
-    {
-        _lastUpdateMs += pendingMs;
-        _grid->applyEra();
+            state = GridState::Pending;
+            return;
+        }
+        break;
+    case GridState::Pending:
+        progress = float(delta) / float(pendingMs);
+        if (progress > 1.0)
+        {
+            progress = 1.0;
+            _lastUpdateMs += pendingMs;
+            _updateView(progress);
+            _grid->applyEra();
 
-        _updateView();
-        state = GridState::Idle;
+            state = GridState::Idle;
+            return;
+        }
+        break;
     }
-    else
-    {
-        delay(10);
-    }
+
+    _updateView(progress);
+    delay(5);
 }
 
 void Update::idle()
 {
     state = GridState::Idle;
     _lastUpdateMs = millis() * _multiplier;
-    _updateView();
+    _updateView(1.0);
 }
 
-void Update::_updateView()
+void Update::_updateView(float progress)
 {
-    _view->update(_grid);
+    _view->update(_grid, progress);
 }

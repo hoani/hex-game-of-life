@@ -1,7 +1,11 @@
 #include "serial_view.h"
 
-void SerialView::update(const Grid *grid)
+void SerialView::update(const Grid *grid, float progress)
 {
+    if (progress != 1.0)
+    {
+        return;
+    }
     _serial.println("-----------------");
     for (int i = 0; i < ROWS; i++)
     {

@@ -9,7 +9,7 @@ class SerialView : public GridView
 public:
     SerialView(Stream &ser) : _serial(ser) {}
 
-    void update(const Grid *grid);
+    void update(const Grid *grid, float progress);
 
 private:
     Stream &_serial;
