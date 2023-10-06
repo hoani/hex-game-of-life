@@ -49,7 +49,7 @@ void Grid::calculateEra()
     {
         for (int j = 0; j < COLS; j++)
         {
-            calculateCell(i, j);
+            _calculateCell(i, j);
         }
     }
 }
@@ -60,14 +60,20 @@ void Grid::applyEra()
     {
         for (int j = 0; j < COLS; j++)
         {
-            applyCell(i, j);
+            _applyCell(i, j);
         }
     }
+    _updateEol(); // Do end of life detection.
+}
+
+int Grid::eolCount() const
+{
+    return _eolCount;
 }
 
 // Private after here.
 
-void Grid::applyCell(int i, int j)
+void Grid::_applyCell(int i, int j)
 {
     if (kill[i][j])
     {
@@ -81,13 +87,13 @@ void Grid::applyCell(int i, int j)
     }
 }
 
-void Grid::calculateCell(int i, int j)
+void Grid::_calculateCell(int i, int j)
 {
     if (cellExists(i, j) == false)
     {
         return;
     }
-    int count = countNeighbours(i, j);
+    int count = _countNeighbours(i, j);
     if (cells[i][j])
     {
         if (count < 2 || count > 3)
@@ -104,7 +110,7 @@ void Grid::calculateCell(int i, int j)
     }
 }
 
-int Grid::countNeighbours(int i, int j)
+int Grid::_countNeighbours(int i, int j)
 {
     int rowLen = rowLength(i);
     int count = 0;
@@ -114,11 +120,11 @@ int Grid::countNeighbours(int i, int j)
         int prevLen = rowLength(i - 1);
         if (prevLen < rowLen)
         {
-            count += neighboursFromSmallerRow(i - 1, j, prevLen);
+            count += _neighboursFromSmallerRow(i - 1, j, prevLen);
         }
         else
         {
-            count += neighboursFromLargerRow(i - 1, j);
+            count += _neighboursFromLargerRow(i - 1, j);
         }
     }
     // cell row
@@ -143,17 +149,17 @@ int Grid::countNeighbours(int i, int j)
         int nextLen = rowLength(i + 1);
         if (nextLen < rowLen)
         {
-            count += neighboursFromSmallerRow(i + 1, j, nextLen);
+            count += _neighboursFromSmallerRow(i + 1, j, nextLen);
         }
         else
         {
-            count += neighboursFromLargerRow(i + 1, j);
+            count += _neighboursFromLargerRow(i + 1, j);
         }
     }
     return count;
 }
 
-int Grid::neighboursFromSmallerRow(int i, int j, int len)
+int Grid::_neighboursFromSmallerRow(int i, int j, int len)
 {
     int count = 0;
     if (j > 0)
@@ -173,7 +179,7 @@ int Grid::neighboursFromSmallerRow(int i, int j, int len)
     return count;
 }
 
-int Grid::neighboursFromLargerRow(int i, int j)
+int Grid::_neighboursFromLargerRow(int i, int j)
 {
     int count = 0;
     if (cells[i][j])
@@ -205,4 +211,48 @@ bool Grid::cellExists(int i, int j)
 int Grid::rowLength(int i)
 {
     return GRID_ROW_SIZE[i];
+}
+
+void Grid::_updateEol()
+{
+    if (_eolCount != 0)
+    {
+        _eolCount++; // Already at end of life. Just increment and return.
+        return;
+    }
+
+    uint64_t entry = _currentEol();
+    // Check if current entry matches existing entries.
+    for (int i = 0; i < EOL_DETECT_LEN; i++)
+    {
+        if (entry == _eolEntries[i])
+        {
+            _eolCount += 1;
+            return;
+        }
+    }
+    // Record the entry since we didn't find a match.
+    _eolEntries[_eolNext] = entry;
+    _eolNext = (_eolNext + 1) % EOL_DETECT_LEN;
+}
+
+uint64_t Grid::_currentEol()
+{
+    uint64_t entry = 0;
+    int index = 0;
+    for (int i = 0; i < ROWS; i++)
+    {
+        for (int j = 0; j < COLS; j++)
+        {
+            if (cellExists(i, j))
+            {
+                if (cells[i][j])
+                {
+                    entry |= (0x1 << index);
+                }
+                index++;
+            }
+        }
+    }
+    return entry;
 }

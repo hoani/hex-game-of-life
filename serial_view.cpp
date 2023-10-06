@@ -42,4 +42,8 @@ void SerialView::update(const Grid *grid)
         _serial.println("");
     }
     _serial.println("-----------------");
+    _serial.print("EOL: ");
+    _serial.print(grid->eolCount());
+    _serial.println("");
+    _serial.println("-----------------");
 }

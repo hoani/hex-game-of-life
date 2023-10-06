@@ -1,6 +1,8 @@
 #ifndef _HGOL_GRID_H_
 #define _HGOL_GRID_H_
 
+#include <stdint.h>
+
 const int SIZE = 5;
 const int ROWS = (2 * SIZE - 1);
 const int COLS = ROWS;
@@ -21,12 +23,22 @@ public:
     void calculateEra();
     void applyEra();
 
+    int eolCount() const;
+
 private:
-    void calculateCell(int i, int j);
-    void applyCell(int i, int j);
-    int countNeighbours(int i, int j);
-    int neighboursFromSmallerRow(int i, int j, int len);
-    int neighboursFromLargerRow(int i, int j);
+    void _calculateCell(int i, int j);
+    void _applyCell(int i, int j);
+    int _countNeighbours(int i, int j);
+    int _neighboursFromSmallerRow(int i, int j, int len);
+    int _neighboursFromLargerRow(int i, int j);
+
+    // End of life detection.
+    const static int EOL_DETECT_LEN = 64;
+    int _eolNext = 0;
+    uint64_t _eolEntries[EOL_DETECT_LEN] = {0};
+    int _eolCount = 0;
+    void _updateEol();
+    uint64_t _currentEol();
 };
 
 class GridView
