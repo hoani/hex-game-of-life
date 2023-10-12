@@ -3,10 +3,7 @@
 
 #include "grid.h"
 
-#include <Adafruit_NeoPixel.h>
-#ifdef __AVR__
-#include <avr/power.h> // Required for 16 MHz Adafruit Trinket
-#endif
+#include <WS2812Serial.h>
 
 class LedView : public GridView
 {
@@ -16,7 +13,7 @@ public:
     void update(const Grid *grid, float progress);
 
 private:
-    Adafruit_NeoPixel pixels;
+    WS2812Serial leds;
     const static int NUM_HUES = 8;
     const static uint16_t cellHue = 0x8800;  // Bluish.
     const static uint16_t killHue = 0xffff;  // Red.

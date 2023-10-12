@@ -1,18 +1,25 @@
 #include "led_view.h"
+#include <Adafruit_NeoPixel.h>
 
-const int NUM_GRID_PIXELS = 113;
+const static int NUM_GRID_PIXELS = 113;
+const static int GRID_ROW_OFFSET[ROWS] = {0, 9, 20, 33, 48, 65, 80, 93, 104};
 
-const int GRID_ROW_OFFSET[ROWS] = {0, 9, 20, 33, 48, 65, 80, 93, 104};
+static byte drawingMemory[NUM_GRID_PIXELS * 3];         //  3 bytes per LED
+static DMAMEM byte displayMemory[NUM_GRID_PIXELS * 12]; // 12 bytes per LED
 
-LedView::LedView(int pin)
+static uint32_t hsv(uint16_t h, uint8_t s, uint8_t v)
 {
-    pixels = Adafruit_NeoPixel(NUM_GRID_PIXELS, pin, NEO_GRB + NEO_KHZ800);
-    pixels.begin();
+    return Adafruit_NeoPixel::gamma32(Adafruit_NeoPixel::ColorHSV(h, s, v));
+}
+
+LedView::LedView(int pin) : leds(NUM_GRID_PIXELS, displayMemory, drawingMemory, pin, WS2812_GRB)
+{
+    leds.begin();
 }
 
 void LedView::update(const Grid *grid, float progress)
 {
-    pixels.clear();
+    leds.clear();
 
     const int eol = grid->eolCount();
     if (eol == 0)
@@ -21,7 +28,7 @@ void LedView::update(const Grid *grid, float progress)
     }
     else
     {
-        const float eolFract = float(eol) / float(grid->EOL_DELAY);
+        const float eolFract = float(eol) / float(grid->EOL_END);
         cellSat = uint8_t((1.0 - eolFract) * float(sat));
     }
 
@@ -30,7 +37,7 @@ void LedView::update(const Grid *grid, float progress)
         int noff = GRID_ROW_OFFSET[i];
         int rowLen = GRID_ROW_SIZE[i];
 
-        uint32_t cellColor = pixels.gamma32(pixels.ColorHSV(cellHue, cellSat, val));
+        uint32_t cellColor = hsv(cellHue, cellSat, val);
         uint32_t spawnColor = calculateSpawnColor(progress);
         uint32_t killColor = calculateKillColor(progress);
 
@@ -39,34 +46,34 @@ void LedView::update(const Grid *grid, float progress)
             int n = noff + j * 2;
             if (grid->kill[i][j])
             {
-                pixels.setPixelColor(n, killColor);
+                leds.setPixelColor(n, killColor);
             }
             else if (grid->spawn[i][j])
             {
-                pixels.setPixelColor(n, spawnColor);
+                leds.setPixelColor(n, spawnColor);
             }
             else if (grid->cells[i][j])
             {
-                pixels.setPixelColor(n, cellColor);
+                leds.setPixelColor(n, cellColor);
             }
         }
     }
-    pixels.show();
+    leds.show();
 }
 
 uint32_t LedView::calculateKillColor(float progress)
 {
     if (progress < 0.125) // Wait period.
     {
-        return pixels.gamma32(pixels.ColorHSV(cellHue, cellSat, val));
+        return hsv(cellHue, cellSat, val);
     }
     else if (progress > 0.75) // Fade out.
     {
         const float a = 1.0 - ((progress - 0.75) * 4.0);
         uint8_t killVal = uint8_t(float(val) * a);
-        return pixels.gamma32(pixels.ColorHSV(killHue, sat, killVal));
+        return hsv(killHue, sat, killVal);
     }
-    return pixels.gamma32(pixels.ColorHSV(killHue, sat, val));
+    return hsv(killHue, sat, val);
 }
 
 uint32_t LedView::calculateSpawnColor(float progress)
@@ -75,12 +82,12 @@ uint32_t LedView::calculateSpawnColor(float progress)
     {
         const float a = progress * 4.0;
         uint8_t spawnVal = uint8_t(float(val) * a);
-        return pixels.gamma32(pixels.ColorHSV(spawnHue, sat, spawnVal));
+        return hsv(spawnHue, sat, spawnVal);
     }
     else if (progress > 0.875) // Transition.
     {
-        return pixels.gamma32(pixels.ColorHSV(cellHue, cellSat, val));
+        return hsv(cellHue, cellSat, val);
     }
-    return pixels.gamma32(pixels.ColorHSV(spawnHue, sat, val));
+    return hsv(spawnHue, sat, val);
     ;
 }

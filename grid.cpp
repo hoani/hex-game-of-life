@@ -25,6 +25,21 @@ Grid::Grid()
 Grid::Grid(int seed)
 {
     randomSeed(seed);
+    for (int i = 0; i < ROWS; i++)
+    {
+        for (int j = 0; j < COLS; j++)
+        {
+            spawn[i][j] = false;
+            kill[i][j] = false;
+            cells[i][j] = false;
+        }
+    }
+    _eolNext = 0;
+    _eolCount = 0;
+    for (int i = 0; i < EOL_DETECT_LEN; i++)
+    {
+        _eolEntries[i] = 0;
+    }
 }
 
 void Grid::calculateEra()
@@ -32,14 +47,14 @@ void Grid::calculateEra()
     const uint64_t currentEol = _currentEol();
 
     // Recovery - this is usually a result of end of life destroying the board.
-    if (currentEol == 0x0)
+    if (currentEol == 0x0 && _eolCount >= EOL_END)
     {
         reset();
         return;
     }
 
     const bool gridFull = (currentEol == EOL_GRID_FULL);
-    const bool doEol = (_eolCount >= EOL_DELAY);
+    const bool doEol = (_eolCount >= EOL_TRIGGER);
 
     for (int i = 0; i < ROWS; i++)
     {

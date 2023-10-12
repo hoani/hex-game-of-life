@@ -27,7 +27,8 @@ public:
 
     void reset();
 
-    const static int EOL_DELAY = 128;
+    const static int EOL_END = 78;
+    const static int EOL_TRIGGER = 75;
     const static uint64_t EOL_GRID_FULL = 0x1fffffffffffffff;
     const static uint64_t EOL_GRID_EMPTY = 0x0;
 
