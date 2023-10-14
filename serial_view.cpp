@@ -46,8 +46,12 @@ void SerialView::update(const Grid *grid, float progress)
         _serial.println("");
     }
     _serial.println("-----------------");
-    _serial.print("EOL: ");
+    _serial.print("Resets: ");
+    _serial.print(grid->resets());
+    _serial.print("\tEOL: ");
     _serial.print(grid->eolCount());
+    _serial.print("\tERA: ");
+    _serial.print(grid->era());
     _serial.println("");
     _serial.println("-----------------");
 }

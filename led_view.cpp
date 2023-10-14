@@ -32,6 +32,13 @@ void LedView::update(const Grid *grid, float progress)
         cellSat = uint8_t((1.0 - eolFract) * float(sat));
     }
 
+    // Detect a new game, and increment the hue.
+    if (grid->era() == 0)
+    {
+        const uint32_t nextHueIndex = grid->resets() % NUM_CELL_HUES;
+        cellHue = cellHueOptions[nextHueIndex];
+    }
+
     for (int i = 0; i < ROWS; i++)
     {
         int noff = GRID_ROW_OFFSET[i];

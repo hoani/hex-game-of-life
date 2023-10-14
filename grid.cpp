@@ -22,32 +22,12 @@ Grid::Grid()
     }
 }
 
-Grid::Grid(int seed)
-{
-    randomSeed(seed);
-    for (int i = 0; i < ROWS; i++)
-    {
-        for (int j = 0; j < COLS; j++)
-        {
-            spawn[i][j] = false;
-            kill[i][j] = false;
-            cells[i][j] = false;
-        }
-    }
-    _eolNext = 0;
-    _eolCount = 0;
-    for (int i = 0; i < EOL_DETECT_LEN; i++)
-    {
-        _eolEntries[i] = 0;
-    }
-}
-
 void Grid::calculateEra()
 {
     const uint64_t currentEol = _currentEol();
 
     // Recovery - this is usually a result of end of life destroying the board.
-    if (currentEol == 0x0 && _eolCount >= EOL_END)
+    if (currentEol == 0x0 && _eolCount > EOL_END)
     {
         reset();
         return;
@@ -91,11 +71,22 @@ void Grid::applyEra()
         }
     }
     _updateEol(); // Do end of life detection.
+    _era++;
 }
 
 int Grid::eolCount() const
 {
     return _eolCount;
+}
+
+uint32_t Grid::era() const
+{
+    return _era;
+}
+
+uint32_t Grid::resets() const
+{
+    return _resets;
 }
 
 void Grid::reset()
@@ -117,8 +108,9 @@ void Grid::reset()
         }
     }
 
-    _eolNext = 0;
+    _era = 0;
     _eolCount = 0;
+    _resets++;
     for (int i = 0; i < EOL_DETECT_LEN; i++)
     {
         _eolEntries[i] = 0;
@@ -302,8 +294,21 @@ void Grid::_updateEol()
         }
     }
     // Record the entry since we didn't find a match.
-    _eolEntries[_eolNext] = entry;
-    _eolNext = (_eolNext + 1) % EOL_DETECT_LEN;
+    for (int i = 0; i < EOL_DETECT_LEN; i++)
+    {
+        // The modulo are powers of two.
+        // This allows us to detect end of life with loops as long as 2^16 entries
+        // using only 16 values.
+        uint32_t mod = 0x1 << i;
+        if (_era % (mod) == 0)
+        {
+            _eolEntries[i] = entry;
+        }
+        else
+        {
+            break; // We can early return if we didn't put a new entry in.
+        }
+    }
 }
 
 uint64_t Grid::_currentEol()

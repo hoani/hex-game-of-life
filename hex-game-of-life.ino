@@ -10,8 +10,8 @@ void setup()
 {
   int seed = analogRead(A3) + analogRead(A4);
   seed += millis();
-  // Grid grid(seed);
-  Grid grid; // For debugging only.
+  randomSeed(seed);
+  Grid grid;
 
   Serial.begin(115200);
 
@@ -21,7 +21,6 @@ void setup()
 
   SerialView serialView(Serial);
   CompoundGridView view(hwView, serialView);
-  // CompoundGridView view(audioView, serialView);
 
   Update update(&grid, &view);
   update.setSpeed(1);

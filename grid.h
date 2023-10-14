@@ -12,7 +12,6 @@ class Grid
 {
 public:
     Grid();
-    Grid(int seed);
     bool cells[ROWS][COLS];
     bool kill[ROWS][COLS];
     bool spawn[ROWS][COLS];
@@ -24,6 +23,8 @@ public:
     void applyEra();
 
     int eolCount() const;
+    uint32_t era() const;
+    uint32_t resets() const;
 
     void reset();
 
@@ -41,10 +42,11 @@ private:
     int _neighboursFromLargerRow(int i, int j);
 
     // End of life detection.
-    const static int EOL_DETECT_LEN = 64;
-    int _eolNext = 0;
+    const static int EOL_DETECT_LEN = 16;
+    uint32_t _era = 0;
     uint64_t _eolEntries[EOL_DETECT_LEN] = {0};
     int _eolCount = 0;
+    uint32_t _resets = 0;
     void _updateEol();
     uint64_t _currentEol();
 };
