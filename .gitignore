@@ -1,6 +1,12 @@
 # Prerequisites
 *.d
 
+# IDE
+.vscode
+
+# Media
+*.wav
+
 # Compiled Object files
 *.slo
 *.lo
